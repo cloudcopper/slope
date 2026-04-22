@@ -25,7 +25,7 @@ The fundamental unit. A ticket is a Markdown file with optional frontmatter meta
 
 - An **archetype** — a classification such as `story`, `feature`, `todo`, `issue` and etc.
 - A **slug** — a human-readable identifier
-- An **ID** — by default `<archetype>-<slug>`, guaranteed unique within the `.slope/` tree (see Section 3.4)
+- An **ID** — by default `<archetype>-<slug>`, guaranteed unique within the `.slope/` tree (see Section 3.4). If the slugified text starts with `<archetype>-` (exact match up to the hyphen boundary), the redundant prefix is stripped (e.g., `slope add feature "Feature number one"` → ID `feature-number-one`, not `feature-feature-number-one`)
 - Optional **frontmatter** — key-value metadata. Keys prefixed with `_` are reserved for slope-internal use (e.g., `_id`, `_allowed_children`, `_remove_keys`). All other keys are user-defined and available to templates.
 - A **body** — Markdown content, optionally containing template directives
 
@@ -39,19 +39,19 @@ A ticket may exist as a file (leaf) or a directory (with children):
 .slope/
   story-aaa.md                        # leaf ticket
   story-bbb/                          # ticket with children
-    story-bbb.md                      # the ticket itself
+    README.md                         # the ticket itself (_id = "story-bbb")
     feature-b11.md                    # child (leaf)
     feature-b12.md                    # child (leaf)
     feature-b13/                      # child with own children
-      feature-b13.md
+      README.md                       # _id = "feature-b13"
       todo-c20.md
 ```
 
 **Naming rules:**
 
 - Default file ticket: `<archetype>-<slug>.md`
-- Default directory ticket: `<archetype>-<slug>/<archetype>-<slug>.md` — the directory name and ticket filename must be the same. When `_id` overrides the canonical ID, both the directory and filename are renamed to match (e.g., `todo-101/todo-101.md`).
-- Adding a child to a leaf ticket using ```slope add ...``` promotes it to directory form automatically
+- Default directory ticket: `<archetype>-<slug>/README.md` — the directory name matches the ticket ID. The ticket file is always `README.md`, which must contain `_id` in its frontmatter.
+- Adding a child to a leaf ticket using ```slope add ...``` promotes it to directory form automatically: `<archetype>-<slug>.md` → `<archetype>-<slug>/README.md`. On promotion, `_id = "<archetype>-<slug>"` is added to the frontmatter (unless `_id` already exists).
 - The id may be overwritten by `_id` metadata
 - The archetype may be overwritten by `_archetype` metadata
 
@@ -138,7 +138,17 @@ Create a new ticket. Text may be provided as:
 - Piped via stdin
 - Entered in `$EDITOR` if neither argument nor stdin is provided
 
-The ticket ID is derived from the archetype and a slug generated from the title. An explicit `--id` flag overrides the generated slug. ID uniqueness is guaranteed per Section 3.4.
+**Text-to-heading rule:** Every ticket must have a heading. If the provided text does not start with a Markdown heading (`#`), a heading is generated automatically:
+
+1. If the text contains a `.` or `\n` — the text before the first `.` or `\n` becomes the `#` heading, the remainder becomes the body
+2. If the text contains neither `.` nor `\n` — the entire text becomes the `#` heading with no body
+
+Examples:
+- `"Oauth support"` → `# Oauth support`
+- `"Oauth support. Must handle refresh tokens."` → `# Oauth support` + body `Must handle refresh tokens.`
+- `"Oauth support\nMust handle refresh tokens"` → `# Oauth support` + body `Must handle refresh tokens`
+
+The ticket ID is derived from the archetype and a slug generated from the heading text. An explicit `--id` flag overrides the generated slug. ID uniqueness is guaranteed per Section 3.4.
 
 ### 6.2. `slope prompt [--debug] <id>`
 
