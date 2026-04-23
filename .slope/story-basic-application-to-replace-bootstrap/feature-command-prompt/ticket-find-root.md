@@ -1,3 +1,6 @@
++++
+status = "done"
++++
 # Find root functionality
 
 We need a method in package internal/fs to find named root walking up.
@@ -24,6 +27,6 @@ Test must use internal/utils/testutils/FsBuilder with billy memfs (see in that p
 # Final checks
 
 Complete when:
-[ ] ```make build``` produce ./slope
-[ ] ```make test``` has no issues
-[ ] ```make cover``` works and the internal/fs has 100% coverage
+[x] ```make build``` produce ./slope
+[x] ```make test``` has no issues
+[x] ```make cover``` works and the internal/fs has 100% coverage
