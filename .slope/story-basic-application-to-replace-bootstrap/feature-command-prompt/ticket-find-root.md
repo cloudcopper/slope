@@ -15,7 +15,7 @@ Should return only stdlib errors
 No windows support needed. Only unix atm.
 Must be implemented according to golang skills.
 
-func FindRoot(fsys billy.Filesystem, cwd string, search path) (string, error)
+```func FindRoot(fsys billy.Filesystem, cwd string, search path) (string, error)```
 
 # Testing
 
@@ -27,6 +27,7 @@ Test must use internal/utils/testutils/FsBuilder with billy memfs (see in that p
 # Final checks
 
 Complete when:
-[x] ```make build``` produce ./slope
-[x] ```make test``` has no issues
-[x] ```make cover``` works and the internal/fs has 100% coverage
+- [x] ```make build``` produce ./slope
+- [x] ```make test``` has no issues
+- [x] ```make cover``` works and the internal/fs has 100% coverage
+

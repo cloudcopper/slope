@@ -77,7 +77,7 @@ Every ticket ID must be unique within the `.slope/` tree. The default ID is `<ar
 
 The global counter is shared across all archetypes (e.g., `todo-101`, `feature-102`, `story-103`).
 
-**Lookup:** `slope prompt <id>` matches against ticket IDs (either filename stem or `_id` if present) via breadth-first search. If a duplicate is detected (e.g., due to manual editing), a warning or error is raised. `slope verify` checks ID uniqueness across the tree.
+**Lookup:** `slope prompt <id>` matches against ticket IDs (either filename stem or `_id` if present) via depth-first search. If a duplicate is detected (e.g., due to manual editing), a warning or error is raised. `slope verify` checks ID uniqueness across the tree.
 
 ## 4. Prompt Generation Pipeline
 
