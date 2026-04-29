@@ -38,11 +38,11 @@ func findSlope() (string, error) {
 		if info, err := os.Stat(candidate); err == nil && info.IsDir() {
 			return candidate, nil
 		}
-		if parent := filepath.Dir(cwd); parent == cwd {
+		parent := filepath.Dir(cwd)
+		if parent == cwd {
 			return "", fmt.Errorf(".slope directory not found")
-		} else {
-			cwd = parent
 		}
+		cwd = parent
 	}
 }
 

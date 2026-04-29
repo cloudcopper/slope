@@ -1,10 +1,13 @@
++++
+status = "done"
++++
 # Type Document
 
 For operating with the achetypes and tickets we need a type Document.
 It shall represent property of .md files used for archetype and tickets:
 - Filepath
 - Metadata from frontmatter, if any
-- Text
+- Text (may be string or AST)
 
 The type shall me in package internal/doc.
 There shall be public constructor ```NewFromFile(fsys billy.Filesystem, filename string) (doc.Document, error)```. It shall load document from file or return an error. It shall support TOML/YAML frontmatter autodetection. It shallg return error if fronmatter is broken.
