@@ -98,14 +98,17 @@ func TestFindRoot(t *testing.T) {
 			builder := testutil.NewFsBuilder(fsys)
 			tt.setup(builder)
 
+			must := require.New(t)
+			is := assert.New(t)
+
 			got, err := fs.FindRoot(fsys, tt.cwd, tt.search)
 
 			if tt.wantErr != nil {
-				require.ErrorIs(t, err, tt.wantErr)
-				assert.Empty(t, got)
+				must.ErrorIs(err, tt.wantErr)
+				is.Empty(got)
 			} else {
-				require.NoError(t, err)
-				assert.Equal(t, tt.want, got)
+				must.NoError(err)
+				is.Equal(tt.want, got)
 			}
 		})
 	}

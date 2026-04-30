@@ -1,3 +1,6 @@
++++
+status = "done"
++++
 # Archetype resolving
 
 The archetype resolving is needed before prompt command can work.
@@ -8,7 +11,7 @@ Per IDEA.md §3.3, archetypes are resolved from:
 It shall be developed in package internal/archetype
 Use golang skills for developing and test
 
-The package should have method ```func Find(fsys billy.Filesystem, root string, archetype string) (document.Document, error)```
+The package should have method ```func Find(fsys billy.Filesystem, root string, home string, archetype string) (document.Document, error)```
 The method shall lookup document as per IDEA.md,
 load it,
 and return (or return error)
@@ -25,9 +28,9 @@ Must have no dead code.
 # Final checks
 
 Complete when:
-- [ ] ```make build``` produce ./slope
-- [ ] ```make test``` has no issues
-- [ ] ```make cover``` works and the internal/fs has 100% coverage
+- [x] ```make build``` produce ./slope
+- [x] ```make test``` has no issues
+- [x] ```make cover``` works and the internal/fs has 100% coverage
 
 
 

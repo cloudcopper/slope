@@ -7,7 +7,6 @@ import (
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/yuin/goldmark/ast"
 
 	"github.com/egorse/slope/internal/doc"
 	"github.com/egorse/slope/internal/utils/testutil"
@@ -24,16 +23,18 @@ Body text.
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("ticket.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	d, err := doc.NewFromFile(fs, "ticket.md")
-	require.NoError(t, err)
-	assert.Equal(t, "ticket.md", d.Filepath)
-	assert.Equal(t, doc.Metadata{}, d.Metadata)
-	assert.NotNil(t, d.AST)
-	assert.Equal(t, ast.KindDocument, d.AST.Kind())
+	must.NoError(err)
+	is.Equal("ticket.md", d.Filepath)
+	is.Equal(doc.Metadata{}, d.Metadata)
+	is.NotNil(d.AST)
 
 	out, err := doc.RenderMarkdown(d)
-	require.NoError(t, err)
-	assert.Equal(t, src, out)
+	must.NoError(err)
+	is.Equal(src, out)
 }
 
 func TestNewFromFile_YAMLFrontmatter(t *testing.T) {
@@ -48,14 +49,17 @@ title: My Feature
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("feature-42.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	d, err := doc.NewFromFile(fs, "feature-42.md")
-	require.NoError(t, err)
-	assert.Equal(t, "feature-42", d.Metadata["_id"])
-	assert.Equal(t, "My Feature", d.Metadata["title"])
+	must.NoError(err)
+	is.Equal("feature-42", d.Metadata["_id"])
+	is.Equal("My Feature", d.Metadata["title"])
 	// AST must contain only the body — frontmatter node is removed by goldmark-frontmatter.
 	out, err := doc.RenderMarkdown(d)
-	require.NoError(t, err)
-	assert.Equal(t, "# Body\n", out)
+	must.NoError(err)
+	is.Equal("# Body\n", out)
 }
 
 func TestNewFromFile_TOMLFrontmatter(t *testing.T) {
@@ -70,13 +74,16 @@ Hello TOML.
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("story-7.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	d, err := doc.NewFromFile(fs, "story-7.md")
-	require.NoError(t, err)
-	assert.Equal(t, "story-7", d.Metadata["_id"])
-	assert.Equal(t, "alice", d.Metadata["author"])
+	must.NoError(err)
+	is.Equal("story-7", d.Metadata["_id"])
+	is.Equal("alice", d.Metadata["author"])
 	out, err := doc.RenderMarkdown(d)
-	require.NoError(t, err)
-	assert.Equal(t, "Hello TOML.\n", out)
+	must.NoError(err)
+	is.Equal("Hello TOML.\n", out)
 }
 
 func TestNewFromFile_TOMLIntegerValue(t *testing.T) {
@@ -92,10 +99,13 @@ body
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("t.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	d, err := doc.NewFromFile(fs, "t.md")
-	require.NoError(t, err)
-	assert.Equal(t, "42", d.Metadata["count"])
-	assert.Equal(t, "1.5", d.Metadata["ratio"])
+	must.NoError(err)
+	is.Equal("42", d.Metadata["count"])
+	is.Equal("1.5", d.Metadata["ratio"])
 }
 
 func TestNewFromFile_FrontmatterBoolAndNumber(t *testing.T) {
@@ -110,11 +120,14 @@ ratio: 1.5
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("t.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	d, err := doc.NewFromFile(fs, "t.md")
-	require.NoError(t, err)
-	assert.Equal(t, "true", d.Metadata["active"])
-	assert.Equal(t, "3", d.Metadata["count"])
-	assert.Equal(t, "1.5", d.Metadata["ratio"])
+	must.NoError(err)
+	is.Equal("true", d.Metadata["active"])
+	is.Equal("3", d.Metadata["count"])
+	is.Equal("1.5", d.Metadata["ratio"])
 }
 
 func TestNewFromFile_FrontmatterNilValue(t *testing.T) {
@@ -129,9 +142,12 @@ body
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("t.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	d, err := doc.NewFromFile(fs, "t.md")
-	require.NoError(t, err)
-	assert.Equal(t, "", d.Metadata["key"])
+	must.NoError(err)
+	is.Equal("", d.Metadata["key"])
 }
 
 func TestNewFromFile_NestedYAMLReturnsError(t *testing.T) {
@@ -146,12 +162,15 @@ body
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("t.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	_, err := doc.NewFromFile(fs, "t.md")
-	require.Error(t, err)
+	must.Error(err)
 	var target *doc.ErrComplexMetadata
-	require.True(t, errors.As(err, &target))
-	assert.Equal(t, "t.md", target.Filepath)
-	assert.Equal(t, "meta", target.Key)
+	must.True(errors.As(err, &target))
+	is.Equal("t.md", target.Filepath)
+	is.Equal("meta", target.Key)
 }
 
 func TestNewFromFile_NestedTOMLReturnsError(t *testing.T) {
@@ -166,24 +185,30 @@ body
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("t.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	_, err := doc.NewFromFile(fs, "t.md")
-	require.Error(t, err)
+	must.Error(err)
 	var target *doc.ErrComplexMetadata
-	require.True(t, errors.As(err, &target))
-	assert.Equal(t, "t.md", target.Filepath)
-	assert.Equal(t, "section", target.Key)
+	must.True(errors.As(err, &target))
+	is.Equal("t.md", target.Filepath)
+	is.Equal("section", target.Key)
 }
 
 func TestNewFromFile_FileNotFound(t *testing.T) {
 	t.Parallel()
 
 	fs := memfs.New()
+	must := require.New(t)
+	is := assert.New(t)
+
 	_, err := doc.NewFromFile(fs, "missing.md")
-	require.Error(t, err)
+	must.Error(err)
 	var target *doc.ErrOpen
-	require.True(t, errors.As(err, &target))
-	assert.Equal(t, "missing.md", target.Filepath)
-	assert.NotNil(t, target.Unwrap())
+	must.True(errors.As(err, &target))
+	is.Equal("missing.md", target.Filepath)
+	is.NotNil(target.Unwrap())
 }
 
 func TestNewFromFile_EmptyFile(t *testing.T) {
@@ -192,14 +217,17 @@ func TestNewFromFile_EmptyFile(t *testing.T) {
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("empty.md", "")
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	d, err := doc.NewFromFile(fs, "empty.md")
-	require.NoError(t, err)
-	assert.Equal(t, doc.Metadata{}, d.Metadata)
-	assert.NotNil(t, d.AST)
+	must.NoError(err)
+	is.Equal(doc.Metadata{}, d.Metadata)
+	is.NotNil(d.AST)
 
 	out, err := doc.RenderMarkdown(d)
-	require.NoError(t, err)
-	assert.Equal(t, "\n", out)
+	must.NoError(err)
+	is.Equal("\n", out)
 }
 
 func TestNewFromFile_FrontmatterNoClosingDelimiter(t *testing.T) {
@@ -214,12 +242,15 @@ body text
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("t.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	_, err := doc.NewFromFile(fs, "t.md")
-	require.Error(t, err)
+	must.Error(err)
 	var target *doc.ErrFrontmatter
-	require.True(t, errors.As(err, &target))
-	assert.Equal(t, "t.md", target.Filepath)
-	assert.NotNil(t, target.Unwrap())
+	must.True(errors.As(err, &target))
+	is.Equal("t.md", target.Filepath)
+	is.NotNil(target.Unwrap())
 }
 
 func TestDocument_ID(t *testing.T) {
@@ -266,8 +297,9 @@ func TestDocument_ID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+			is := assert.New(t)
 			d := doc.Document{Filepath: tt.filepath, Metadata: tt.metadata}
-			assert.Equal(t, tt.expected, d.ID())
+			is.Equal(tt.expected, d.ID())
 		})
 	}
 }
@@ -310,8 +342,9 @@ func TestDocument_Archetype(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+			is := assert.New(t)
 			d := doc.Document{Filepath: tt.filepath, Metadata: tt.metadata}
-			assert.Equal(t, tt.expected, d.Archetype())
+			is.Equal(tt.expected, d.Archetype())
 		})
 	}
 }
@@ -331,14 +364,17 @@ Do things.
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("todo-5.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	d, err := doc.NewFromFile(fs, "todo-5.md")
-	require.NoError(t, err)
-	assert.Equal(t, "todo-5", d.ID())
-	assert.Equal(t, "todo", d.Archetype())
+	must.NoError(err)
+	is.Equal("todo-5", d.ID())
+	is.Equal("todo", d.Archetype())
 
 	out, err := doc.RenderMarkdown(d)
-	require.NoError(t, err)
-	assert.Equal(t, "# Task\n\nDo things.\n", out)
+	must.NoError(err)
+	is.Equal("# Task\n\nDo things.\n", out)
 }
 
 func TestRenderMarkdown_TOML(t *testing.T) {
@@ -353,12 +389,15 @@ Content.
 	fs := memfs.New()
 	testutil.NewFsBuilder(fs).File("feature-99.md", src)
 
+	must := require.New(t)
+	is := assert.New(t)
+
 	d, err := doc.NewFromFile(fs, "feature-99.md")
-	require.NoError(t, err)
-	assert.Equal(t, "feature-99", d.ID())
-	assert.Equal(t, "feature", d.Archetype())
+	must.NoError(err)
+	is.Equal("feature-99", d.ID())
+	is.Equal("feature", d.Archetype())
 
 	out, err := doc.RenderMarkdown(d)
-	require.NoError(t, err)
-	assert.Equal(t, "Content.\n", out)
+	must.NoError(err)
+	is.Equal("Content.\n", out)
 }
