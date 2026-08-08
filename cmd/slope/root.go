@@ -5,10 +5,9 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:           "slope",
-	Short:         "Slope project management tool",
-	SilenceUsage:  true,
-	SilenceErrors: true,
+	Use:          "slope",
+	Short:        "Slope project management tool",
+	SilenceUsage: true,
 }
 
 // Execute runs the root command.
